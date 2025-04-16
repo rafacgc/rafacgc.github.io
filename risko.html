@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Risco Cardiovascular - RISKO</title>
+    <meta name="description" content="Calcule seu risco cardiovascular com a Calculadora RISKO. Insira idade, peso, pressão arterial e mais.">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Cabeçalho -->
+    <header class="bg-blue-600 text-white p-4">
+        <h1 class="text-2xl md:text-3xl font-bold text-center">Calculadora de Risco Cardiovascular - RISKO</h1>
+    </header>
+
+    <!-- Espaço para Anúncio (Topo) -->
+    <div class="max-w-4xl mx-auto my-4 p-4 bg-gray-200 text-center">
+        <p>[Espaço para Anúncio - 728x90]</p>
+        <!-- Adicione o código do AdSense aqui após aprovação -->
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <main class="max-w-4xl mx-auto p-4">
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <form id="form">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Idade (anos):</label>
+                        <input type="number" id="idade" required class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">História Familiar:</label>
+                        <select id="hereditariedade" required class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
+                            <option value="" disabled selected>Selecione uma opção</option>
+                            <option value="0">Nenhuma história reconhecida</option>
+                            <option value="1">1 parente com +60 anos com doença cardiovascular</option>
+                            <option value="2">2 parentes com +60 anos com doença cardiovascular</option>
+                            <option value="3">1 parente com -60 anos com doença cardiovascular</option>
+                            <option value="4">2 parentes com -60 anos com doença cardiovascular</option>
+                            <option value="5">3 ou mais parentes com -60 anos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Peso (kg):</label>
+                        <input type="text" id="peso" required placeholder="Ex: 70.5 ou 70,5" class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Altura (m):</label>
+                        <input type="text" id="altura" required placeholder="Ex: 1.75 ou 1,75" class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Cigarros por dia:</label>
+                        <input type="number" id="fumo" required class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nível de Atividade Física:</label>
+                        <select id="exercicio" required class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
+                            <option value="" disabled selected>Selecione uma opção</option>
+                            <option value="5">Esforço ocupacional e recreacional intenso</option>
+                            <option value="4">Esforço ocupacional e recreacional moderado</option>
+                            <option value="3">Trabalho sedentário e esforço recreacional intenso</option>
+                            <option value="2">Trabalho sedentário e esforço recreacional moderado</option>
+                            <option value="1">Trabalho sedentário e esforço recreacional leve</option>
+                            <option value="0">Ausência completa de exercício</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Gordura na dieta (%):</label>
+                        <input type="text" id="gordura_dieta" required placeholder="Ex: 10.5 ou 10,5" class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">PAS (mmHg):</label>
+                        <input type="number" id="pas" required class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">PAD (mmHg):</label>
+                        <input type="number" id="pad" required class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <button type="button" id="calcular-btn" class="block w-full md:w-48 mx-auto mt-6 p-3 bg-red-600 text-white rounded hover:bg-red-700">Calcular</button>
+            </form>
+            <div id="output" class="mt-6 p-4 bg-gray-100 rounded border-l-4 border-blue-500"></div>
+        </div>
+    </main>
+
+    <!-- Espaço para Anúncio (Rodapé) -->
+    <div class="max-w-4xl mx-auto my-4 p-4 bg-gray-200 text-center">
+        <p>[Espaço para Anúncio - 300x250]</p>
+        <!-- Adicione o código do AdSense aqui após aprovação -->
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="bg-gray-800 text-white text-center p-4">
+        <p>© 2025 Calculadoras Online. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        function ageOpt(age) {
+            age = parseInt(age);
+            if (10 < age && age <= 20) return ['10 - 20 anos', 1];
+            if (20 < age && age <= 30) return ['21 - 30 anos', 2];
+            if (30 < age && age <= 40) return ['31 - 40 anos', 3];
+            if (40 < age && age <= 50) return ['41 - 50 anos', 4];
+            if (50 < age && age <= 60) return ['51 - 60 anos', 6];
+            return ['Acima de 60 anos', 8];
+        }
+
+        function famHistOpt(famHist) {
+            switch (famHist) {
+                case '0': return ['Nenhuma história reconhecida', 1];
+                case '1': return ['1 parente com +60 anos com doença cardiovascular', 2];
+                case '2': return ['2 parentes com +60 anos com doença cardiovascular', 3];
+                case '3': return ['1 parente com -60 anos com doença cardiovascular', 4];
+                case '4': return ['2 parentes com -60 anos com doença cardiovascular', 6];
+                default: return ['3 ou mais parentes com -60 anos', 8];
+            }
+        }
+
+        function weightOpt(high, weight) {
+            high = parseFloat(high.replace(',', '.'));
+            weight = parseFloat(weight.replace(',', '.'));
+            const weightMin = high * high * 18.5;
+            const weightMax = high * high * 25;
+            if (weight < weightMin - 2.3) return ['+ de 2,3kg abaixo do peso padrão*', 0];
+            if (weightMin - 2.3 < weight && weight <= weightMax + 2.3) return ['De -2,3kg a +2,3kg do peso padrão*', 1];
+            if (weightMax + 2.3 < weight && weight <= weightMax + 9) return ['Excesso de peso padrão* de 2,4kg a 9kg', 2];
+            if (weightMax + 9 < weight && weight <= weightMax + 15.8) return ['Excesso de peso padrão* de 9,1kg a 15,8kg', 3];
+            if (weightMax + 15.8 < weight && weight <= weightMax + 22.6) return ['Excesso de peso padrão* de 15,9kg a 22,6kg', 5];
+            return ['Excesso de peso padrão* acima de 22,6kg', 7];
+        }
+
+        function smokeOpt(smoke) {
+            smoke = parseInt(smoke);
+            if (smoke === 0) return ['Não Fumante', 0];
+            if (0 < smoke && smoke <= 10) return ['10 cigarros ou menos por dia', 1];
+            if (10 < smoke && smoke <= 20) return ['De 11 a 20 cigarros por dia', 2];
+            if (20 < smoke && smoke <= 30) return ['De 21 a 30 cigarros por dia', 4];
+            if (30 < smoke && smoke <= 40) return ['De 31 a 40 cigarros por dia', 6];
+            return ['Acima de 40 cigarros por dia', 10];
+        }
+
+        function fitnessOpt(fitness) {
+            switch (fitness) {
+                case '5': return ['Esforço Ocupacional e recreacional intenso', 1];
+                case '4': return ['Esforço Ocupacional e recreacional moderado', 2];
+                case '3': return ['Trabalho sedentário e esforço recreacional intenso', 3];
+                case '2': return ['Trabalho sedentário e esforço recreacional moderado', 5];
+                case '1': return ['Trabalho sedentário e esforço recreacional leve', 6];
+                default: return ['Ausência completa de qualquer exercício', 8];
+            }
+        }
+
+        function fatDietOpt(fat) {
+            fat = parseFloat(fat.replace(',', '.'));
+            if (fat === 0) return ['Ausência de gorduras animais ou sólidas na dieta', 1];
+            if (fat <= 10) return ['10% de gordura animal ou sólida na dieta', 2];
+            if (10 < fat && fat <= 20) return ['20% de gordura animal ou sólida na dieta', 3];
+            if (20 < fat && fat <= 30) return ['30% de gordura animal ou sólida na dieta', 4];
+            if (30 < fat && fat <= 40) return ['40% de gordura animal ou sólida na dieta', 5];
+            return ['50% de gordura animal ou sólida na dieta', 7];
+        }
+
+        function pasOpt(pas) {
+            pas = parseInt(pas);
+            if (pas < 120) return ['Abaixo de 120 mmHg', 1];
+            if (120 <= pas && pas < 140) return ['De 120 a 139 mmHg', 2];
+            if (140 <= pas && pas < 160) return ['De 140 a 159 mmHg', 3];
+            if (160 <= pas && pas < 180) return ['De 160 a 179 mmHg', 4];
+            if (180 <= pas && pas < 200) return ['De 180 a 199 mmHg', 6];
+            return ['Acima de 200 mmHg', 8];
+        }
+
+        function padOpt(pad) {
+            pad = parseInt(pad);
+            if (pad < 70) return ['Abaixo de 70 mmHg', 1];
+            if (70 <= pad && pad < 77) return ['De 71 a 76 mmHg', 2];
+            if (77 <= pad && pad < 83) return ['De 77 a 82 mmHg', 3];
+            if (83 <= pad && pad < 94) return ['De 83 a 93 mmHg', 5];
+            if (94 <= pad && pad < 106) return ['De 94 a 105 mmHg', 6];
+            return ['Acima de 106 mmHg', 8];
+        }
+
+        function avaliarRisco(total) {
+            if (6 <= total && total <= 11) return "Risco bem abaixo da média para desenvolver doenças coronarianas";
+            if (12 <= total && total <= 17) return "Risco abaixo da média para desenvolver doenças coronarianas";
+            if (18 <= total && total <= 24) return "Risco na média geral para desenvolver doenças coronarianas";
+            if (25 <= total && total <= 31) return "Risco moderado para desenvolver doenças coronarianas";
+            if (32 <= total && total <= 40) return "<span class='text-red-600'>Risco em nível perigoso para desenvolver doenças coronarianas</span>";
+            if (41 <= total && total <= 64) return "<span class='text-red-600'>Risco avançado para desenvolver doenças coronarianas - procurar urgentemente um cardiologista e iniciar mudança de hábitos alimentares e de vida, iniciando um bom programa de atividades físicas regulares.</span>";
+            return "Total fora do intervalo esperado (6-64 pontos)";
+        }
+
+        function registro(idade, hereditariedade, peso, altura, fumo, exercicio, gordura_dieta, pas, pad) {
+            const idadeResult = ageOpt(idade);
+            const hereditariedadeResult = famHistOpt(hereditariedade);
+            const pesoResult = weightOpt(altura, peso);
+            const fumoResult = smokeOpt(fumo);
+            const exercicioResult = fitnessOpt(exercicio);
+            const gorduraDietaResult = fatDietOpt(gordura_dieta);
+            const pasResult = pasOpt(pas);
+            const padResult = padOpt(pad);
+            const total = idadeResult[1] + hereditariedadeResult[1] + pesoResult[1] + fumoResult[1] +
+                          exercicioResult[1] + gorduraDietaResult[1] + pasResult[1] + padResult[1];
+            const risco = avaliarRisco(total);
+
+            return `Idade: ${idadeResult[0]} - <span class="text-red-600">${idadeResult[1]}</span> pontos\n` +
+                   `História Familiar: ${hereditariedadeResult[0]} - <span class="text-red-600">${hereditariedadeResult[1]}</span> pontos\n` +
+                   `Peso: ${pesoResult[0]} - <span class="text-red-600">${pesoResult[1]}</span> pontos\n` +
+                   `Fumo: ${fumoResult[0]} - <span class="text-red-600">${fumoResult[1]}</span> pontos\n` +
+                   `Exercício: ${exercicioResult[0]} - <span class="text-red-600">${exercicioResult[1]}</span> pontos\n` +
+                   `Gordura na Dieta: ${gorduraDietaResult[0]} - <span class="text-red-600">${gorduraDietaResult[1]}</span> pontos\n` +
+                   `PAS: ${pasResult[0]} - <span class="text-red-600">${pasResult[1]}</span> pontos\n` +
+                   `PAD: ${padResult[0]} - <span class="text-red-600">${pasResult[1]}</span> pontos\n` +
+                   `Total: <span class="text-red-600">${total}</span> pontos\n` +
+                   `Risco: ${risco}`;
+        }
+
+        document.getElementById("calcular-btn").addEventListener("click", function() {
+            const idade = document.getElementById("idade").value;
+            const hereditariedade = document.getElementById("hereditariedade").value;
+            const peso = document.getElementById("peso").value;
+            const altura = document.getElementById("altura").value;
+            const fumo = document.getElementById("fumo").value;
+            const exercicio = document.getElementById("exercicio").value;
+            const gordura_dieta = document.getElementById("gordura_dieta").value;
+            const pas = document.getElementById("pas").value;
+            const pad = document.getElementById("pad").value;
+
+            if (!idade || !hereditariedade || !peso || !altura || !fumo || !exercicio || !gordura_dieta || !pas || !pad) {
+                document.getElementById("output").innerHTML = '<span class="text-red-600 font-bold">Erro: Por favor, preencha todos os campos obrigatórios.</span>';
+                return;
+            }
+
+            try {
+                const resultado = registro(idade, hereditariedade, peso, altura, fumo, exercicio, gordura_dieta, pas, pad);
+                document.getElementById("output").innerHTML = resultado;
+            } catch (e) {
+                document.getElementById("output").innerHTML = `<span class="text-red-600 font-bold">Erro: ${e.message}</span>`;
+            }
+        });
+    </script>
+</body>
+</html>
