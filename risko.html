@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Risco Cardiovascular - RISKO</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -55,21 +56,38 @@
             outline: none;
             box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
         }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
         button {
-            display: block;
             width: 200px;
-            margin: 20px auto;
             padding: 12px;
-            background-color: #e74c3c;
-            color: white;
             border: none;
             border-radius: 5px;
             font-size: 1.1em;
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        button:hover {
+        #calcular-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        #calcular-btn:hover {
             background-color: #c0392b;
+        }
+        #gerar-pdf-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        #gerar-pdf-btn:hover {
+            background-color: #2980b9;
+        }
+        #gerar-pdf-btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
         }
         #output {
             margin-top: 20px;
@@ -92,6 +110,10 @@
             h1 {
                 font-size: 1.8em;
             }
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
             button {
                 width: 100%;
             }
@@ -103,6 +125,22 @@
         <h1>Calculadora de Risco Cardiovascular - RISKO</h1>
         <form id="form">
             <div class="form-group">
+                <div class="form-item">
+                    <label>Nome Completo do Funcionário:</label>
+                    <input type="text" id="nome" required>
+                </div>
+                <div class="form-item">
+                    <label>Matrícula:</label>
+                    <input type="text" id="matricula" required>
+                </div>
+                <div class="form-item">
+                    <label>Bioparque:</label>
+                    <input type="text" id="bioparque" required>
+                </div>
+                <div class="form-item">
+                    <label>Data:</label>
+                    <input type="date" id="data" required>
+                </div>
                 <div class="form-item">
                     <label>Idade (anos):</label>
                     <input type="number" id="idade" required>
@@ -156,12 +194,18 @@
                     <input type="number" id="pad" required>
                 </div>
             </div>
-            <button type="button" id="calcular-btn">Calcular</button>
+            <div class="button-group">
+                <button type="button" id="calcular-btn">Calcular</button>
+                <button type="button" id="gerar-pdf-btn" disabled>Gerar PDF</button>
+            </div>
         </form>
         <div id="output"></div>
     </div>
 
     <script>
+        const { jsPDF } = window.jspdf;
+        let ultimoResultado = null;
+
         function ageOpt(age) {
             age = parseInt(age);
             if (10 < age && age <= 20) return ['10 - 20 anos', 1];
@@ -249,62 +293,4 @@
 
         function avaliarRisco(total) {
             if (6 <= total && total <= 11) return "Risco bem abaixo da média para desenvolver doenças coronarianas";
-            if (12 <= total && total <= 17) return "Risco abaixo da média para desenvolver doenças coronarianas";
-            if (18 <= total && total <= 24) return "Risco na média geral para desenvolver doenças coronarianas";
-            if (25 <= total && total <= 31) return "Risco moderado para desenvolver doenças coronarianas";
-            if (32 <= total && total <= 40) return "<span style='color: red'>Risco em nível perigoso para desenvolver doenças coronarianas</span>";
-            if (41 <= total && total <= 64) return "<span style='color: red'>Risco avançado para desenvolver doenças coronarianas - procurar urgentemente um cardiologista e iniciar mudança de hábitos alimentares e de vida, iniciando um bom programa de atividades físicas regulares.</span>";
-            return "Total fora do intervalo esperado (6-64 pontos)";
-        }
-
-        function registro(idade, hereditariedade, peso, altura, fumo, exercicio, gordura_dieta, pas, pad) {
-            const idadeResult = ageOpt(idade);
-            const hereditariedadeResult = famHistOpt(hereditariedade);
-            const pesoResult = weightOpt(altura, peso);
-            const fumoResult = smokeOpt(fumo);
-            const exercicioResult = fitnessOpt(exercicio);
-            const gorduraDietaResult = fatDietOpt(gordura_dieta);
-            const pasResult = pasOpt(pas);
-            const padResult = padOpt(pad);
-            const total = idadeResult[1] + hereditariedadeResult[1] + pesoResult[1] + fumoResult[1] +
-                          exercicioResult[1] + gorduraDietaResult[1] + pasResult[1] + padResult[1];
-            const risco = avaliarRisco(total);
-
-            return `Idade: ${idadeResult[0]} - <span style="color: red">${idadeResult[1]}</span> pontos\n` +
-                   `História Familiar: ${hereditariedadeResult[0]} - <span style="color: red">${hereditariedadeResult[1]}</span> pontos\n` +
-                   `Peso: ${pesoResult[0]} - <span style="color: red">${pesoResult[1]}</span> pontos\n` +
-                   `Fumo: ${fumoResult[0]} - <span style="color: red">${fumoResult[1]}</span> pontos\n` +
-                   `Exercício: ${exercicioResult[0]} - <span style="color: red">${exercicioResult[1]}</span> pontos\n` +
-                   `Gordura na Dieta: ${gorduraDietaResult[0]} - <span style="color: red">${gorduraDietaResult[1]}</span> pontos\n` +
-                   `PAS: ${pasResult[0]} - <span style="color: red">${pasResult[1]}</span> pontos\n` +
-                   `PAD: ${padResult[0]} - <span style="color: red">${padResult[1]}</span> pontos\n` +
-                   `Total: <span style="color: red">${total}</span> pontos\n` +
-                   `Risco: ${risco}`;
-        }
-
-        document.getElementById("calcular-btn").addEventListener("click", function() {
-            const idade = document.getElementById("idade").value;
-            const hereditariedade = document.getElementById("hereditariedade").value;
-            const peso = document.getElementById("peso").value;
-            const altura = document.getElementById("altura").value;
-            const fumo = document.getElementById("fumo").value;
-            const exercicio = document.getElementById("exercicio").value;
-            const gordura_dieta = document.getElementById("gordura_dieta").value;
-            const pas = document.getElementById("pas").value;
-            const pad = document.getElementById("pad").value;
-
-            if (!idade || !hereditariedade || !peso || !altura || !fumo || !exercicio || !gordura_dieta || !pas || !pad) {
-                document.getElementById("output").innerHTML = '<span class="error">Erro: Por favor, preencha todos os campos obrigatórios.</span>';
-                return;
-            }
-
-            try {
-                const resultado = registro(idade, hereditariedade, peso, altura, fumo, exercicio, gordura_dieta, pas, pad);
-                document.getElementById("output").innerHTML = resultado;
-            } catch (e) {
-                document.getElementById("output").innerHTML = `<span class="error">Erro: ${e.message}</span>`;
-            }
-        });
-    </script>
-</body>
-</html>
+            if (12 <= total && total <= 17) return "Risco abaixo da média para desenvolve
