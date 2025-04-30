@@ -4,95 +4,162 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Risco Cardiovascular - RISKO</title>
-    <meta name="description" content="Calcule seu risco cardiovascular com a Calculadora RISKO. Insira idade, peso, pressão arterial e mais.">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7fa;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+        }
+        .form-item {
+            flex: 1 1 300px;
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dcdcdc;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+        button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 12px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #c0392b;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            font-size: 1.1em;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            border-left: 4px solid #3498db;
+        }
+        .error {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        @media (max-width: 600px) {
+            .form-item {
+                flex: 1 1 100%;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans">
-    <!-- Cabeçalho -->
-    <header class="bg-blue-600 text-white p-4">
-        <h1 class="text-2xl md:text-3xl font-bold text-center">Calculadora de Risco Cardiovascular - RISKO</h1>
-    </header>
-
-    <!-- Espaço para Anúncio (Topo) -->
-    <div class="max-w-4xl mx-auto my-4 p-4 bg-gray-200 text-center">
-        <p>[Espaço para Anúncio - 728x90]</p>
-        <!-- Adicione o código do AdSense aqui após aprovação -->
-    </div>
-
-    <!-- Conteúdo Principal -->
-    <main class="max-w-4xl mx-auto p-4">
-        <div class="bg-white shadow-md rounded-lg p-6">
-            <form id="form">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Idade (anos):</label>
-                        <input type="number" id="idade" required class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">História Familiar:</label>
-                        <select id="hereditariedade" required class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
-                            <option value="" disabled selected>Selecione uma opção</option>
-                            <option value="0">Nenhuma história reconhecida</option>
-                            <option value="1">1 parente com +60 anos com doença cardiovascular</option>
-                            <option value="2">2 parentes com +60 anos com doença cardiovascular</option>
-                            <option value="3">1 parente com -60 anos com doença cardiovascular</option>
-                            <option value="4">2 parentes com -60 anos com doença cardiovascular</option>
-                            <option value="5">3 ou mais parentes com -60 anos</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Peso (kg):</label>
-                        <input type="text" id="peso" required placeholder="Ex: 70.5 ou 70,5" class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Altura (m):</label>
-                        <input type="text" id="altura" required placeholder="Ex: 1.75 ou 1,75" class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Cigarros por dia:</label>
-                        <input type="number" id="fumo" required class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Nível de Atividade Física:</label>
-                        <select id="exercicio" required class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
-                            <option value="" disabled selected>Selecione uma opção</option>
-                            <option value="5">Esforço ocupacional e recreacional intenso</option>
-                            <option value="4">Esforço ocupacional e recreacional moderado</option>
-                            <option value="3">Trabalho sedentário e esforço recreacional intenso</option>
-                            <option value="2">Trabalho sedentário e esforço recreacional moderado</option>
-                            <option value="1">Trabalho sedentário e esforço recreacional leve</option>
-                            <option value="0">Ausência completa de exercício</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Gordura na dieta (%):</label>
-                        <input type="text" id="gordura_dieta" required placeholder="Ex: 10.5 ou 10,5" class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">PAS (mmHg):</label>
-                        <input type="number" id="pas" required class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">PAD (mmHg):</label>
-                        <input type="number" id="pad" required class="mt-1 p-2 border rounded w-full focus:ring-2 focus:ring-blue-500">
-                    </div>
+<body>
+    <div class="container">
+        <h1>Calculadora de Risco Cardiovascular - RISKO</h1>
+        <form id="form">
+            <div class="form-group">
+                <div class="form-item">
+                    <label>Idade (anos):</label>
+                    <input type="number" id="idade" required>
                 </div>
-                <button type="button" id="calcular-btn" class="block w-full md:w-48 mx-auto mt-6 p-3 bg-red-600 text-white rounded hover:bg-red-700">Calcular</button>
-            </form>
-            <div id="output" class="mt-6 p-4 bg-gray-100 rounded border-l-4 border-blue-500"></div>
-        </div>
-    </main>
-
-    <!-- Espaço para Anúncio (Rodapé) -->
-    <div class="max-w-4xl mx-auto my-4 p-4 bg-gray-200 text-center">
-        <p>[Espaço para Anúncio - 300x250]</p>
-        <!-- Adicione o código do AdSense aqui após aprovação -->
+                <div class="form-item">
+                    <label>História Familiar:</label>
+                    <select id="hereditariedade" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="0">Nenhuma história reconhecida</option>
+                        <option value="1">1 parente com +60 anos com doença cardiovascular</option>
+                        <option value="2">2 parentes com +60 anos com doença cardiovascular</option>
+                        <option value="3">1 parente com -60 anos com doença cardiovascular</option>
+                        <option value="4">2 parentes com -60 anos com doença cardiovascular</option>
+                        <option value="5">3 ou mais parentes com -60 anos</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>Peso (kg):</label>
+                    <input type="text" id="peso" required placeholder="Ex: 70.5 ou 70,5">
+                </div>
+                <div class="form-item">
+                    <label>Altura (m):</label>
+                    <input type="text" id="altura" required placeholder="Ex: 1.75 ou 1,75">
+                </div>
+                <div class="form-item">
+                    <label>Cigarros por dia:</label>
+                    <input type="number" id="fumo" required>
+                </div>
+                <div class="form-item">
+                    <label>Nível de Atividade Física:</label>
+                    <select id="exercicio" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="5">Esforço ocupacional e recreacional intenso</option>
+                        <option value="4">Esforço ocupacional e recreacional moderado</option>
+                        <option value="3">Trabalho sedentário e esforço recreacional intenso</option>
+                        <option value="2">Trabalho sedentário e esforço recreacional moderado</option>
+                        <option value="1">Trabalho sedentário e esforço recreacional leve</option>
+                        <option value="0">Ausência completa de exercício</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>Gordura na dieta (%):</label>
+                    <input type="text" id="gordura_dieta" required placeholder="Ex: 10.5 ou 10,5">
+                </div>
+                <div class="form-item">
+                    <label>PAS (mmHg):</label>
+                    <input type="number" id="pas" required>
+                </div>
+                <div class="form-item">
+                    <label>PAD (mmHg):</label>
+                    <input type="number" id="pad" required>
+                </div>
+            </div>
+            <button type="button" id="calcular-btn">Calcular</button>
+        </form>
+        <div id="output"></div>
     </div>
-
-    <!-- Rodapé -->
-    <footer class="bg-gray-800 text-white text-center p-4">
-        <p>© 2025 Calculadoras Online. Todos os direitos reservados.</p>
-    </footer>
 
     <script>
         function ageOpt(age) {
@@ -185,8 +252,8 @@
             if (12 <= total && total <= 17) return "Risco abaixo da média para desenvolver doenças coronarianas";
             if (18 <= total && total <= 24) return "Risco na média geral para desenvolver doenças coronarianas";
             if (25 <= total && total <= 31) return "Risco moderado para desenvolver doenças coronarianas";
-            if (32 <= total && total <= 40) return "<span class='text-red-600'>Risco em nível perigoso para desenvolver doenças coronarianas</span>";
-            if (41 <= total && total <= 64) return "<span class='text-red-600'>Risco avançado para desenvolver doenças coronarianas - procurar urgentemente um cardiologista e iniciar mudança de hábitos alimentares e de vida, iniciando um bom programa de atividades físicas regulares.</span>";
+            if (32 <= total && total <= 40) return "<span style='color: red'>Risco em nível perigoso para desenvolver doenças coronarianas</span>";
+            if (41 <= total && total <= 64) return "<span style='color: red'>Risco avançado para desenvolver doenças coronarianas - procurar urgentemente um cardiologista e iniciar mudança de hábitos alimentares e de vida, iniciando um bom programa de atividades físicas regulares.</span>";
             return "Total fora do intervalo esperado (6-64 pontos)";
         }
 
@@ -203,15 +270,15 @@
                           exercicioResult[1] + gorduraDietaResult[1] + pasResult[1] + padResult[1];
             const risco = avaliarRisco(total);
 
-            return `Idade: ${idadeResult[0]} - <span class="text-red-600">${idadeResult[1]}</span> pontos\n` +
-                   `História Familiar: ${hereditariedadeResult[0]} - <span class="text-red-600">${hereditariedadeResult[1]}</span> pontos\n` +
-                   `Peso: ${pesoResult[0]} - <span class="text-red-600">${pesoResult[1]}</span> pontos\n` +
-                   `Fumo: ${fumoResult[0]} - <span class="text-red-600">${fumoResult[1]}</span> pontos\n` +
-                   `Exercício: ${exercicioResult[0]} - <span class="text-red-600">${exercicioResult[1]}</span> pontos\n` +
-                   `Gordura na Dieta: ${gorduraDietaResult[0]} - <span class="text-red-600">${gorduraDietaResult[1]}</span> pontos\n` +
-                   `PAS: ${pasResult[0]} - <span class="text-red-600">${pasResult[1]}</span> pontos\n` +
-                   `PAD: ${padResult[0]} - <span class="text-red-600">${pasResult[1]}</span> pontos\n` +
-                   `Total: <span class="text-red-600">${total}</span> pontos\n` +
+            return `Idade: ${idadeResult[0]} - <span style="color: red">${idadeResult[1]}</span> pontos\n` +
+                   `História Familiar: ${hereditariedadeResult[0]} - <span style="color: red">${hereditariedadeResult[1]}</span> pontos\n` +
+                   `Peso: ${pesoResult[0]} - <span style="color: red">${pesoResult[1]}</span> pontos\n` +
+                   `Fumo: ${fumoResult[0]} - <span style="color: red">${fumoResult[1]}</span> pontos\n` +
+                   `Exercício: ${exercicioResult[0]} - <span style="color: red">${exercicioResult[1]}</span> pontos\n` +
+                   `Gordura na Dieta: ${gorduraDietaResult[0]} - <span style="color: red">${gorduraDietaResult[1]}</span> pontos\n` +
+                   `PAS: ${pasResult[0]} - <span style="color: red">${pasResult[1]}</span> pontos\n` +
+                   `PAD: ${padResult[0]} - <span style="color: red">${padResult[1]}</span> pontos\n` +
+                   `Total: <span style="color: red">${total}</span> pontos\n` +
                    `Risco: ${risco}`;
         }
 
@@ -227,7 +294,7 @@
             const pad = document.getElementById("pad").value;
 
             if (!idade || !hereditariedade || !peso || !altura || !fumo || !exercicio || !gordura_dieta || !pas || !pad) {
-                document.getElementById("output").innerHTML = '<span class="text-red-600 font-bold">Erro: Por favor, preencha todos os campos obrigatórios.</span>';
+                document.getElementById("output").innerHTML = '<span class="error">Erro: Por favor, preencha todos os campos obrigatórios.</span>';
                 return;
             }
 
@@ -235,7 +302,7 @@
                 const resultado = registro(idade, hereditariedade, peso, altura, fumo, exercicio, gordura_dieta, pas, pad);
                 document.getElementById("output").innerHTML = resultado;
             } catch (e) {
-                document.getElementById("output").innerHTML = `<span class="text-red-600 font-bold">Erro: ${e.message}</span>`;
+                document.getElementById("output").innerHTML = `<span class="error">Erro: ${e.message}</span>`;
             }
         });
     </script>
