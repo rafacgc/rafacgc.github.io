@@ -2,250 +2,423 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Calculadora de Risco Cardiovascular</title>
-    <link rel="stylesheet" href="https://pyscript.net/unstable/core.css" />
-    <script defer src="https://pyscript.net/unstable/core.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Risco Cardiovascular - RISKO</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        label { display: block; margin: 10px 0 5px; }
-        input, select { margin-bottom: 10px; padding: 5px; width: 200px; }
-        button { padding: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #45a049; }
-        #output { margin-top: 20px; white-space: pre-wrap; font-size: 16px; }
-        #error { color: red; }
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7fa;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+        }
+        .form-item {
+            flex: 1 1 300px;
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dcdcdc;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        button {
+            width: 200px;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #calcular-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        #calcular-btn:hover {
+            background-color: #c0392b;
+        }
+        #gerar-pdf-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        #gerar-pdf-btn:hover {
+            background-color: #2980b9;
+        }
+        #gerar-pdf-btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            font-size: 1.1em;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            border-left: 4px solid #3498db;
+        }
+        .error {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        @media (max-width: 600px) {
+            .form-item {
+                flex: 1 1 100%;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Calculadora de Risco Cardiovascular</h1>
-    <form id="form">
-        <label>Idade (anos):</label>
-        <input type="number" id="idade" required>
-
-        <label>História Familiar:</label>
-        <select id="hereditariedade" required>
-            <option value="0">Nenhuma história reconhecida</option>
-            <option value="1">1 parente com +60 anos com doença cardiovascular</option>
-            <option value="2">2 parentes com +60 anos com doença cardiovascular</option>
-            <option value="3">1 parente com -60 anos com doença cardiovascular</option>
-            <option value="4">2 parentes com -60 anos com doença cardiovascular</option>
-            <option value="5">3 ou mais parentes com -60 anos</option>
-        </select>
-
-        <label>Peso (kg):</label>
-        <input type="number" id="peso" step="0.1" required>
-
-        <label>Altura (m):</label>
-        <input type="number" id="altura" step="0.01" required>
-
-        <label>Cigarros por dia:</label>
-        <input type="number" id="fumo" required>
-
-        <label>Nível de Atividade Física:</label>
-        <select id="exercicio" required>
-            <option value="5">Esforço ocupacional e recreacional intenso</option>
-            <option value="4">Esforço ocupacional e recreacional moderado</option>
-            <option value="3">Trabalho sedentário e esforço recreacional intenso</option>
-            <option value="2">Trabalho sedentário e esforço recreacional moderado</option>
-            <option value="1">Trabalho sedentário e esforço recreacional leve</option>
-            <option value="0">Ausência completa de exercício</option>
-        </select>
-
-        <label>Gordura na dieta (%):</label>
-        <input type="number" id="gordura_dieta" required>
-
-        <label>PAS (mmHg):</label>
-        <input type="number" id="pas" required>
-
-        <label>PAD (mmHg):</label>
-        <input type="number" id="pad" required>
-
-        <button type="button" id="calcular-btn">Calcular</button>
-    </form>
-
-    <div id="output"></div>
-    <div id="error"></div>
-
-    <script type="py" id="main-script">
-from pyscript import Element, document
-
-def age_opt(age):
-    age = int(age)
-    if 10 < age <= 20:
-        return '10 - 20 anos', 1
-    elif 20 < age <= 30:
-        return '21 - 30 anos', 2
-    elif 30 < age <= 40:
-        return '31 - 40 anos', 3
-    elif 40 < age <= 50:
-        return '41 - 50 anos', 4
-    elif 50 < age <= 60:
-        return '51 - 60 anos', 6
-    else:
-        return 'Acima de 60 anos', 8
-
-def fam_hist_opt(fam_hist):
-    if fam_hist == '0':
-        return 'Nenhuma história reconhecida', 1
-    elif fam_hist == '1':
-        return '1 parente com +60 anos com doença cardiovascular', 2
-    elif fam_hist == '2':
-        return '2 parentes com +60 anos com doença cardiovascular', 3
-    elif fam_hist == '3':
-        return '1 parente com -60 anos com doença cardiovascular', 4
-    elif fam_hist == '4':
-        return '2 parentes com -60 anos com doença cardiovascular', 6
-    else:
-        return '3 ou mais parentes com -60 anos', 8
-
-def weight_opt(high, weight):
-    weight_min = float(high) * float(high) * 18.5
-    weight_max = float(high) * float(high) * 25
-    weight = float(weight)
-    if weight < weight_min - 2.3:
-        return '+ de 2,3kg abaixo do peso padrão*', 0
-    elif weight_min - 2.3 < weight <= weight_max + 2.3:
-        return 'De -2,3kg a +2,3kg do peso padrão*', 1
-    elif weight_max + 2.3 < weight <= weight_max + 9:
-        return 'Excesso de peso padrão* de 2,4kg a 9kg', 2
-    elif weight_max + 9 < weight <= weight_max + 15.8:
-        return 'Excesso de peso padrão* de 9,1kg a 15,8kg', 3
-    elif weight_max + 15.8 < weight <= weight_max + 22.6:
-        return 'Excesso de peso padrão* de 15,9kg a 22,6kg', 5
-    else:
-        return 'Excesso de peso padrão* acima de 22,6kg', 7
-
-def smoke_opt(smoke):
-    smoke = int(smoke)
-    if smoke == 0:
-        return 'Não Fumante', 0
-    elif 0 < smoke <= 10:
-        return '10 cigarros ou menos por dia', 1
-    elif 10 < smoke <= 20:
-        return 'De 11 a 20 cigarros por dia', 2
-    elif 20 < smoke <= 30:
-        return 'De 21 a 30 cigarros por dia', 4
-    elif 30 < smoke <= 40:
-        return 'De 31 a 40 cigarros por dia', 6
-    else:
-        return 'Acima de 40 cigarros por dia', 10
-
-def fitness_opt(fitness):
-    if fitness == '5':
-        return 'Esforço Ocupacional e recreacional intenso', 1
-    elif fitness == '4':
-        return 'Esforço Ocupacional e recreacional moderado', 2
-    elif fitness == '3':
-        return 'Trabalho sedentário e esforço recreacional intenso', 3
-    elif fitness == '2':
-        return 'Trabalho sedentário e esforço recreacional moderado', 5
-    elif fitness == '1':
-        return 'Trabalho sedentário e esforço recreacional leve', 6
-    else:
-        return 'Ausência completa de qualquer exercício', 8
-
-def fat_diet_opt(fat):
-    fat = int(fat)
-    if fat == 0:
-        return 'Ausência de gorduras animais ou sólidas na dieta', 1
-    elif fat <= 10:
-        return '10% de gordura animal ou sólida na dieta', 2
-    elif 10 < fat <= 20:
-        return '20% de gordura animal ou sólida na dieta', 3
-    elif 20 < fat <= 30:
-        return '30% de gordura animal ou sólida na dieta', 4
-    elif 30 < fat <= 40:
-        return '40% de gordura animal ou sólida na dieta', 5
-    else:
-        return '50% de gordura animal ou sólida na dieta', 7
-
-def pas_opt(pas):
-    pas = int(pas)
-    if pas < 120:
-        return 'Abaixo de 120 mmHg', 1
-    elif 120 <= pas < 140:
-        return 'De 120 a 139 mmHg', 2
-    elif 140 <= pas < 160:
-        return 'De 140 a 159 mmHg', 3
-    elif 160 <= pas < 180:
-        return 'De 160 a 179 mmHg', 4
-    elif 180 <= pas < 200:
-        return 'De 180 a 199 mmHg', 6
-    else:
-        return 'Acima de 200 mmHg', 8
-
-def pad_opt(pad):
-    pad = int(pad)
-    if pad < 70:
-        return 'Abaixo de 70 mmHg', 1
-    elif 70 <= pad < 77:
-        return 'De 71 a 76 mmHg', 2
-    elif 77 <= pad < 83:
-        return 'De 77 a 82 mmHg', 3
-    elif 83 <= pad < 94:
-        return 'De 83 a 93 mmHg', 5
-    elif 94 <= pad < 106:
-        return 'De 94 a 105 mmHg', 6
-    else:
-        return 'Acima de 106 mmHg', 8
-
-def registro(idade, hereditariedade, peso, altura, fumo, exercicio, gordura_dieta, pas, pad):
-    idade_result = age_opt(idade)
-    hereditariedade_result = fam_hist_opt(hereditariedade)
-    peso_result = weight_opt(altura, peso)
-    fumo_result = smoke_opt(fumo)
-    exercicio_result = fitness_opt(exercicio)
-    gordura_dieta_result = fat_diet_opt(gordura_dieta)
-    pas_result = pas_opt(pas)
-    pad_result = pad_opt(pad)
-    total = (idade_result[1] + hereditariedade_result[1] + peso_result[1] + fumo_result[1] +
-             exercicio_result[1] + gordura_dieta_result[1] + pas_result[1] + pad_result[1])
-    
-    output = (f"Idade: {idade_result[0]} - {idade_result[1]} pontos\n"
-              f"História Familiar: {hereditariedade_result[0]} - {hereditariedade_result[1]} pontos\n"
-              f"Peso: {peso_result[0]} - {peso_result[1]} pontos\n"
-              f"Fumo: {fumo_result[0]} - {fumo_result[1]} pontos\n"
-              f"Exercício: {exercicio_result[0]} - {exercicio_result[1]} pontos\n"
-              f"Gordura na Dieta: {gordura_dieta_result[0]} - {gordura_dieta_result[1]} pontos\n"
-              f"PAS: {pas_result[0]} - {pas_result[1]} pontos\n"
-              f"PAD: {pad_result[0]} - {pad_result[1]} pontos\n"
-              f"Total: {total} pontos")
-    return output
-
-def calcular(event):
-    try:
-        idade = Element("idade").value
-        hereditariedade = Element("hereditariedade").value
-        peso = Element("peso").value
-        altura = Element("altura").value
-        fumo = Element("fumo").value
-        exercicio = Element("exercicio").value
-        gordura_dieta = Element("gordura_dieta").value
-        pas = Element("pas").value
-        pad = Element("pad").value
-        
-        resultado = registro(idade, hereditariedade, peso, altura, fumo, exercicio, gordura_dieta, pas, pad)
-        Element("output").write(resultado)
-    except Exception as e:
-        Element("output").write(f"Erro: {str(e)}")
-
-print("Script Python carregado com sucesso!")
-document.getElementById("calcular-btn").addEventListener("click", calcular)
-    </script>
+    <div class="container">
+        <h1>Calculadora de Risco Cardiovascular - RISKO</h1>
+        <form id="form">
+            <div class="form-group">
+                <div class="form-item">
+                    <label>Nome Completo do Funcionário:</label>
+                    <input type="text" id="nome" required>
+                </div>
+                <div class="form-item">
+                    <label>Matrícula:</label>
+                    <input type="text" id="matricula" required>
+                </div>
+                <div class="form-item">
+                    <label>Bioparque:</label>
+                    <input type="text" id="bioparque" required>
+                </div>
+                <div class="form-item">
+                    <label>Data:</label>
+                    <input type="date" id="data" required>
+                </div>
+                <div class="form-item">
+                    <label>Idade (anos):</label>
+                    <input type="number" id="idade" required>
+                </div>
+                <div class="form-item">
+                    <label>História Familiar:</label>
+                    <select id="hereditariedade" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="0">Nenhuma história reconhecida</option>
+                        <option value="1">1 parente com +60 anos com doença cardiovascular</option>
+                        <option value="2">2 parentes com +60 anos com doença cardiovascular</option>
+                        <option value="3">1 parente com -60 anos com doença cardiovascular</option>
+                        <option value="4">2 parentes com -60 anos com doença cardiovascular</option>
+                        <option value="5">3 ou mais parentes com -60 anos</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>Peso (kg):</label>
+                    <input type="text" id="peso" required placeholder="Ex: 70.5 ou 70,5">
+                </div>
+                <div class="form-item">
+                    <label>Altura (m):</label>
+                    <input type="text" id="altura" required placeholder="Ex: 1.75 ou 1,75">
+                </div>
+                <div class="form-item">
+                    <label>Cigarros por dia:</label>
+                    <input type="number" id="fumo" required>
+                </div>
+                <div class="form-item">
+                    <label>Nível de Atividade Física:</label>
+                    <select id="exercicio" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="5">Esforço ocupacional e recreacional intenso</option>
+                        <option value="4">Esforço ocupacional e recreacional moderado</option>
+                        <option value="3">Trabalho sedentário e esforço recreacional intenso</option>
+                        <option value="2">Trabalho sedentário e esforço recreacional moderado</option>
+                        <option value="1">Trabalho sedentário e esforço recreacional leve</option>
+                        <option value="0">Ausência completa de exercício</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>Gordura na dieta (%):</label>
+                    <input type="text" id="gordura_dieta" required placeholder="Ex: 10.5 ou 10,5">
+                </div>
+                <div class="form-item">
+                    <label>PAS (mmHg):</label>
+                    <input type="number" id="pas" required>
+                </div>
+                <div class="form-item">
+                    <label>PAD (mmHg):</label>
+                    <input type="number" id="pad" required>
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="button" id="calcular-btn">Calcular</button>
+                <button type="button" id="gerar-pdf-btn" disabled>Gerar PDF</button>
+            </div>
+        </form>
+        <div id="output"></div>
+    </div>
 
     <script>
-        // Verifica se o PyScript carregou
-        window.addEventListener("load", function() {
-            if (typeof pyscript === "undefined") {
-                document.getElementById("error").innerText = "Erro: PyScript não carregou corretamente.";
-            } else {
-                console.log("PyScript carregado com sucesso no JavaScript!");
+        const { jsPDF } = window.jspdf;
+        let ultimoResultado = null;
+
+        function ageOpt(age) {
+            age = parseInt(age);
+            if (10 < age && age <= 20) return ['10 - 20 anos', 1];
+            if (20 < age && age <= 30) return ['21 - 30 anos', 2];
+            if (30 < age && age <= 40) return ['31 - 40 anos', 3];
+            if (40 < age && age <= 50) return ['41 - 50 anos', 4];
+            if (50 < age && age <= 60) return ['51 - 60 anos', 6];
+            return ['Acima de 60 anos', 8];
+        }
+
+        function famHistOpt(famHist) {
+            switch (famHist) {
+                case '0': return ['Nenhuma história reconhecida', 1];
+                case '1': return ['1 parente com +60 anos com doença cardiovascular', 2];
+                case '2': return ['2 parentes com +60 anos com doença cardiovascular', 3];
+                case '3': return ['1 parente com -60 anos com doença cardiovascular', 4];
+                case '4': return ['2 parentes com -60 anos com doença cardiovascular', 6];
+                default: return ['3 ou mais parentes com -60 anos', 8];
+            }
+        }
+
+        function weightOpt(high, weight) {
+            high = parseFloat(high.replace(',', '.'));
+            weight = parseFloat(weight.replace(',', '.'));
+            const weightMin = high * high * 18.5;
+            const weightMax = high * high * 25;
+            if (weight < weightMin - 2.3) return ['+ de 2,3kg abaixo do peso padrão*', 0];
+            if (weightMin - 2.3 < weight && weight <= weightMax + 2.3) return ['De -2,3kg a +2,3kg do peso padrão*', 1];
+            if (weightMax + 2.3 < weight && weight <= weightMax + 9) return ['Excesso de peso padrão* de 2,4kg a 9kg', 2];
+            if (weightMax + 9 < weight && weight <= weightMax + 15.8) return ['Excesso de peso padrão* de 9,1kg a 15,8kg', 3];
+            if (weightMax + 15.8 < weight && weight <= weightMax + 22.6) return ['Excesso de peso padrão* de 15,9kg a 22,6kg', 5];
+            return ['Excesso de peso padrão* acima de 22,6kg', 7];
+        }
+
+        function smokeOpt(smoke) {
+            smoke = parseInt(smoke);
+            if (smoke === 0) return ['Não Fumante', 0];
+            if (0 < smoke && smoke <= 10) return ['10 cigarros ou menos por dia', 1];
+            if (10 < smoke && smoke <= 20) return ['De 11 a 20 cigarros por dia', 2];
+            if (20 < smoke && smoke <= 30) return ['De 21 a 30 cigarros por dia', 4];
+            if (30 < smoke && smoke <= 40) return ['De 31 a 40 cigarros por dia', 6];
+            return ['Acima de 40 cigarros por dia', 10];
+        }
+
+        function fitnessOpt(fitness) {
+            switch (fitness) {
+                case '5': return ['Esforço Ocupacional e recreacional intenso', 1];
+                case '4': return ['Esforço Ocupacional e recreacional moderado', 2];
+                case '3': return ['Trabalho sedentário e esforço recreacional intenso', 3];
+                case '2': return ['Trabalho sedentário e esforço recreacional moderado', 5];
+                case '1': return ['Trabalho sedentário e esforço recreacional leve', 6];
+                default: return ['Ausência completa de qualquer exercício', 8];
+            }
+        }
+
+        function fatDietOpt(fat) {
+            fat = parseFloat(fat.replace(',', '.'));
+            if (fat === 0) return ['Ausência de gorduras animais ou sólidas na dieta', 1];
+            if (fat <= 10) return ['10% de gordura animal ou sólida na dieta', 2];
+            if (10 < fat && fat <= 20) return ['20% de gordura animal ou sólida na dieta', 3];
+            if (20 < fat && fat <= 30) return ['30% de gordura animal ou sólida na dieta', 4];
+            if (30 < fat && fat <= 40) return ['40% de gordura animal ou sólida na dieta', 5];
+            return ['50% de gordura animal ou sólida na dieta', 7];
+        }
+
+        function pasOpt(pas) {
+            pas = parseInt(pas);
+            if (pas < 120) return ['Abaixo de 120 mmHg', 1];
+            if (120 <= pas && pas < 140) return ['De 120 a 139 mmHg', 2];
+            if (140 <= pas && pas < 160) return ['De 140 a 159 mmHg', 3];
+            if (160 <= pas && pas < 180) return ['De 160 a 179 mmHg', 4];
+            if (180 <= pas && pas < 200) return ['De 180 a 199 mmHg', 6];
+            return ['Acima de 200 mmHg', 8];
+        }
+
+        function padOpt(pad) {
+            pad = parseInt(pad);
+            if (pad < 70) return ['Abaixo de 70 mmHg', 1];
+            if (70 <= pad && pad < 77) return ['De 71 a 76 mmHg', 2];
+            if (77 <= pad && pad < 83) return ['De 77 a 82 mmHg', 3];
+            if (83 <= pad && pad < 94) return ['De 83 a 93 mmHg', 5];
+            if (94 <= pad && pad < 106) return ['De 94 a 105 mmHg', 6];
+            return ['Acima de 106 mmHg', 8];
+        }
+
+        function avaliarRisco(total) {
+            if (6 <= total && total <= 11) return "Risco bem abaixo da média para desenvolver doenças coronarianas";
+            if (12 <= total && total <= 17) return "Risco abaixo da média para desenvolver doenças coronarianas";
+            if (18 <= total && total <= 24) return "Risco na média geral para desenvolver doenças coronarianas";
+            if (25 <= total && total <= 31) return "Risco moderado para desenvolver doenças coronarianas";
+            if (32 <= total && total <= 40) return "Risco em nível perigoso para desenvolver doenças coronarianas";
+            if (41 <= total && total <= 64) return "Risco avançado para desenvolver doenças coronarianas - procurar urgentemente um cardiologista e iniciar mudança de hábitos alimentares e de vida, iniciando um bom programa de atividades físicas regulares.";
+            return "Total fora do intervalo esperado (6-64 pontos)";
+        }
+
+        function registro(nome, matricula, bioparque, data, idade, hereditariedade, peso, altura, fumo, exercicio, gordura_dieta, pas, pad) {
+            const idadeResult = ageOpt(idade);
+            const hereditariedadeResult = famHistOpt(hereditariedade);
+            const pesoResult = weightOpt(altura, peso);
+            const fumoResult = smokeOpt(fumo);
+            const exercicioResult = fitnessOpt(exercicio);
+            const gorduraDietaResult = fatDietOpt(gordura_dieta);
+            const pasResult = pasOpt(pas);
+            const padResult = padOpt(pad);
+            const total = idadeResult[1] + hereditariedadeResult[1] + pesoResult[1] + fumoResult[1] +
+                          exercicioResult[1] + gorduraDietaResult[1] + pasResult[1] + padResult[1];
+            const risco = avaliarRisco(total);
+
+            const resultado = {
+                nome,
+                matricula,
+                bioparque,
+                data,
+                idade: idadeResult,
+                hereditariedade: hereditariedadeResult,
+                peso: pesoResult,
+                fumo: fumoResult,
+                exercicio: exercicioResult,
+                gordura_dieta: gorduraDietaResult,
+                pas: pasResult,
+                pad: padResult,
+                total,
+                risco
+            };
+
+            return resultado;
+        }
+
+        function gerarPDF(resultado) {
+            const doc = new jsPDF();
+            doc.setFontSize(16);
+            doc.text('RISKO - TESTE DE ÍNDICE CORONARIANO', 20, 20);
+            doc.setFontSize(12);
+            doc.text(`Nome Completo do Funcionário: ${resultado.nome}`, 20, 30);
+            doc.text(`Matrícula: ${resultado.matricula}`, 20, 40);
+            doc.text(`Bioparque: ${resultado.bioparque}`, 20, 50);
+            doc.text(`Data: ${resultado.data}`, 20, 60);
+
+            doc.autoTable({
+                startY: 70,
+                head: [['Tabela', 'Descrição', 'Pontuação']],
+                body: [
+                    ['Idade', resultado.idade[0], resultado.idade[1]],
+                    ['Hereditariedade', resultado.hereditariedade[0], resultado.hereditariedade[1]],
+                    ['Peso', resultado.peso[0], resultado.peso[1]],
+                    ['Fumo', resultado.fumo[0], resultado.fumo[1]],
+                    ['Exercício', resultado.exercicio[0], resultado.exercicio[1]],
+                    ['Gordura na Dieta', resultado.gordura_dieta[0], resultado.gordura_dieta[1]],
+                    ['Pressão Arterial Sistólica', resultado.pas[0], resultado.pas[1]],
+                    ['Pressão Arterial Diastólica', resultado.pad[0], resultado.pad[1]],
+                    ['Total', '', resultado.total],
+                    ['Risco', resultado.risco.replace(/<span style='color: red'>(.*?)<\/span>/, '$1'), '']
+                ],
+                styles: { fontSize: 10 },
+                columnStyles: { 0: { cellWidth: 50 }, 1: { cellWidth: 100 }, 2: { cellWidth: 30 } }
+            });
+
+            doc.save('RISKO_Resultado.pdf');
+        }
+
+        document.getElementById("calcular-btn").addEventListener("click", function() {
+            const nome = document.getElementById("nome").value;
+            const matricula = document.getElementById("matricula").value;
+            const bioparque = document.getElementById("bioparque").value;
+            const data = document.getElementById("data").value;
+            const idade = document.getElementById("idade").value;
+            const hereditariedade = document.getElementById("hereditariedade").value;
+            const peso = document.getElementById("peso").value;
+            const altura = document.getElementById("altura").value;
+            const fumo = document.getElementById("fumo").value;
+            const exercicio = document.getElementById("exercicio").value;
+            const gordura_dieta = document.getElementById("gordura_dieta").value;
+            const pas = document.getElementById("pas").value;
+            const pad = document.getElementById("pad").value;
+
+            if (!nome || !matricula || !bioparque || !data || !idade || !hereditariedade || !peso || !altura || !fumo || !exercicio || !gordura_dieta || !pas || !pad) {
+                document.getElementById("output").innerHTML = '<span class="error">Erro: Por favor, preencha todos os campos obrigatórios.</span>';
+                return;
+            }
+
+            try {
+                const resultado = registro(nome, matricula, bioparque, data, idade, hereditariedade, peso, altura, fumo, exercicio, gordura_dieta, pas, pad);
+                ultimoResultado = resultado;
+                const outputText = `Nome: ${resultado.nome}\n` +
+                                   `Matrícula: ${resultado.matricula}\n` +
+                                   `Bioparque: ${resultado.bioparque}\n` +
+                                   `Data: ${resultado.data}\n` +
+                                   `Idade: ${resultado.idade[0]} - <span style="color: red">${resultado.idade[1]}</span> pontos\n` +
+                                   `História Familiar: ${resultado.hereditariedade[0]} - <span style="color: red">${resultado.hereditariedade[1]}</span> pontos\n` +
+                                   `Peso: ${resultado.peso[0]} - <span style="color: red">${resultado.peso[1]}</span> pontos\n` +
+                                   `Fumo: ${resultado.fumo[0]} - <span style="color: red">${resultado.fumo[1]}</span> pontos\n` +
+                                   `Exercício: ${resultado.exercicio[0]} - <span style="color: red">${resultado.exercicio[1]}</span> pontos\n` +
+                                   `Gordura na Dieta: ${resultado.gordura_dieta[0]} - <span style="color: red">${resultado.gordura_dieta[1]}</span> pontos\n` +
+                                   `PAS: ${resultado.pas[0]} - <span style="color: red">${resultado.pas[1]}</span> pontos\n` +
+                                   `PAD: ${resultado.pad[0]} - <span style="color: red">${resultado.pad[1]}</span> pontos\n` +
+                                   `Total: <span style="color: red">${resultado.total}</span> pontos\n` +
+                                   `Risco: ${resultado.risco}`;
+                document.getElementById("output").innerHTML = outputText;
+                document.getElementById("gerar-pdf-btn").disabled = false;
+            } catch (e) {
+                document.getElementById("output").innerHTML = `<span class="error">Erro: ${e.message}</span>`;
+                document.getElementById("gerar-pdf-btn").disabled = true;
             }
         });
 
-        // Log do clique no botão
-        document.getElementById("calcular-btn").addEventListener("click", function() {
-            console.log("Botão Calcular clicado!");
+        document.getElementById("gerar-pdf-btn").addEventListener("click", function() {
+            if (ultimoResultado) {
+                gerarPDF(ultimoResultado);
+            }
         });
+
+        // Definir data atual como padrão
+        document.getElementById("data").value = new Date().toISOString().split('T')[0];
     </script>
 </body>
 </html>
